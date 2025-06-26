@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Learning Material</title>
+</head>
+<body>
+  <h2>Upload Learning Materials</h2>
+
+  <div id="pin-area">
+    <input type="password" id="pin" placeholder="Enter shared PIN" />
+    <button onclick="checkPin()">Submit</button>
+  </div>
+
+  <div id="upload-area" style="display:none;">
+    <input type="file" id="fileInput" />
+    <button onclick="uploadFile()">Upload</button>
+    <p id="status"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getStorage, ref, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+
+    // Firebase config (from your earlier message)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYpXaL6oNhuX3LWAinx7LmhrAozfVzCvk",
+      authDomain: "dr-de-roda-lr-portal.firebaseapp.com",
+      projectId: "dr-de-roda-lr-portal",
+      storageBucket: "dr-de-roda-lr-portal.appspot.com",  // <- corrected here
+      messagingSenderId: "1074205661200",
+      appId: "1:1074205661200:web:f42d20c85f8600728cd295",
+      measurementId: "G-MJF7Z2DYHS"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+
+    // Shared PIN setup
+    const correctPin = "1234"; // 🔒 Replace with your shared PIN
+
+    window.checkPin = function () {
+      const userPin = document.getElementById("pin").value;
+      if (userPin === correctPin) {
+        document.getElementById("pin-area").style.display = "none";
+        document.getElementById("upload-area").style.display = "block";
+      } else {
+        alert("Incorrect PIN. Try again.");
+      }
+    };
+
+    window.uploadFile = function () {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) return alert("No file selected.");
+
+      const storageRef = ref(storage, `uploads/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          document.getElementById("status").innerText = `Uploading... ${percent.toFixed(2)}%`;
+        },
+        (error) => {
+          alert("Upload failed: " + error.message);
+        },
+        () => {
+          document.getElementById("status").innerText = `✅ Upload complete: ${file.name}`;
+        }
+      );
+    };
+  </script>
+</body>
+</html>
