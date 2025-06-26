@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Kinder - Math</title>
+  <style>
+    body { font-family: Arial; margin: 0; padding: 0; background: #f9f9f9; }
+    .navbar { background: #004aad; color: white; padding: 10px 20px; display: flex; align-items: center; }
+    .navbar img { height: 40px; margin-right: 10px; }
+    .container { padding: 20px; }
+    h1 { color: #222; }
+    ul { list-style-type: none; padding: 0; }
+    li { background: #fff; margin: 5px 0; padding: 10px; border-radius: 6px; }
+    a { color: #004aad; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <img src="logo.png" alt="Logo">
+    <span>Kinder - Math</span>
+  </div>
+  <div class="container">
+    <h1>Available Files in Math</h1>
+    <ul id="fileList"></ul>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYpXaL6oNhuX3LWAinx7LmhrAozfVzCvk",
+      authDomain: "dr-de-roda-lr-portal.firebaseapp.com",
+      projectId: "dr-de-roda-lr-portal",
+      storageBucket: "dr-de-roda-lr-portal.appspot.com",
+      messagingSenderId: "1074205661200",
+      appId: "1:1074205661200:web:f42d20c85f8600728cd295",
+      measurementId: "G-MJF7Z2DYHS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const listRef = ref(storage, 'Kinder/Math/');
+    const fileList = document.getElementById("fileList");
+
+    listAll(listRef).then((res) => {
+      res.items.forEach((itemRef) => {
+        getDownloadURL(itemRef).then((url) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="${url}" target="_blank">${itemRef.name}</a>`;
+          fileList.appendChild(li);
+        });
+      });
+    }).catch((error) => {
+      console.error("Error listing files:", error);
+    });
+  </script>
+</body>
+</html>
