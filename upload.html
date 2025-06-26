@@ -1,72 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Upload Learning Material</title>
+  <meta charset="UTF-8" />
+  <title>Upload Learning Materials</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #2563eb;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1d4ed8;
+    }
+
+    #status {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #4b5563;
+    }
+  </style>
 </head>
 <body>
-  <h2>Upload Learning Materials</h2>
+  <div class="container">
+    <h2>Upload Materials</h2>
 
-  <div id="pin-area">
-    <input type="password" id="pin" placeholder="Enter shared PIN" />
-    <button onclick="checkPin()">Submit</button>
+    <!-- PIN Area -->
+    <div id="pin-area">
+      <input type="password" id="pin" placeholder="Enter shared PIN" />
+      <button onclick="checkPin()">Submit</button>
+    </div>
+
+    <!-- Upload Area -->
+    <div id="upload-area" style="display:none;">
+      <select id="grade">
+        <option value="">Select Grade</option>
+        <option value="Kinder">Kinder</option>
+        <option value="Grade 1">Grade 1</option>
+        <option value="Grade 2">Grade 2</option>
+        <option value="Grade 3">Grade 3</option>
+        <option value="Grade 4">Grade 4</option>
+        <option value="Grade 5">Grade 5</option>
+        <option value="Grade 6">Grade 6</option>
+      </select>
+
+      <select id="subject">
+        <option value="">Select Subject</option>
+        <option value="Math">Math</option>
+        <option value="Science">Science</option>
+        <option value="English">English</option>
+        <option value="Filipino">Filipino</option>
+        <option value="Araling Panlipunan">Araling Panlipunan</option>
+        <option value="ESP">ESP</option>
+        <option value="MAPEH">MAPEH</option>
+      </select>
+
+      <input type="file" id="fileInput" />
+      <button onclick="uploadFile()">Upload</button>
+      <div id="status"></div>
+    </div>
   </div>
 
-  <div id="upload-area" style="display:none;">
-    <input type="file" id="fileInput" />
-    <button onclick="uploadFile()">Upload</button>
-    <p id="status"></p>
-  </div>
-
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getStorage, ref, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 
-    // Firebase config (from your earlier message)
     const firebaseConfig = {
       apiKey: "AIzaSyAYpXaL6oNhuX3LWAinx7LmhrAozfVzCvk",
       authDomain: "dr-de-roda-lr-portal.firebaseapp.com",
       projectId: "dr-de-roda-lr-portal",
-      storageBucket: "dr-de-roda-lr-portal.appspot.com",  // <- corrected here
+      storageBucket: "dr-de-roda-lr-portal.appspot.com",
       messagingSenderId: "1074205661200",
       appId: "1:1074205661200:web:f42d20c85f8600728cd295",
       measurementId: "G-MJF7Z2DYHS"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
 
-    // Shared PIN setup
-    const correctPin = "1234"; // 🔒 Replace with your shared PIN
+    const correctPin = "1234"; // Change this as needed
 
     window.checkPin = function () {
-      const userPin = document.getElementById("pin").value;
-      if (userPin === correctPin) {
+      const pin = document.getElementById("pin").value;
+      if (pin === correctPin) {
         document.getElementById("pin-area").style.display = "none";
         document.getElementById("upload-area").style.display = "block";
       } else {
-        alert("Incorrect PIN. Try again.");
+        alert("Incorrect PIN");
       }
     };
 
     window.uploadFile = function () {
       const file = document.getElementById("fileInput").files[0];
-      if (!file) return alert("No file selected.");
+      const grade = document.getElementById("grade").value;
+      const subject = document.getElementById("subject").value;
+      const status = document.getElementById("status");
 
-      const storageRef = ref(storage, `uploads/${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      if (!file || !grade || !subject) {
+        alert("Please select grade, subject and file.");
+        return;
+      }
 
-      uploadTask.on('state_changed',
+      const filePath = `${grade}/${subject}/${file.name}`;
+      const fileRef = ref(storage, filePath);
+      const uploadTask = uploadBytesResumable(fileRef, file);
+
+      uploadTask.on(
+        'state_changed',
         (snapshot) => {
           const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          document.getElementById("status").innerText = `Uploading... ${percent.toFixed(2)}%`;
+          status.innerText = `Uploading: ${percent.toFixed(1)}%`;
         },
         (error) => {
-          alert("Upload failed: " + error.message);
+          status.innerText = `Upload failed: ${error}`;
         },
         () => {
-          document.getElementById("status").innerText = `✅ Upload complete: ${file.name}`;
+          status.innerText = `✅ Uploaded to ${grade}/${subject}`;
         }
       );
     };
