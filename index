@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dr. Alfredo Pio De Roda LR Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f6f8;
+    }
+    header {
+      background-color: #004080;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background-color: #003060;
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      padding: 20px;
+    }
+    .announcement-box {
+      background-color: white;
+      border-left: 6px solid #004080;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .announcement-box h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .announcement-box p {
+      margin: 5px 0 0 0;
+    }
+    .date {
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dr. Alfredo Pio De Roda<br>Learning Resource Portal</h1>
+  </header>
+
+  <nav>
+    <a href="/navigation.html">Grade Levels</a>
+    <a href="/upload.html">Upload</a>
+    <a href="/index.html">Home</a>
+  </nav>
+
+  <div class="container">
+    <h2>📢 Announcements</h2>
+    <div id="announcements"></div>
+  </div>
+
+  <script type="module">
+  // Import the functions you need from the SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+  import { getStorage } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+
+  // ✅ FIXED: Correct storage bucket domain
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYpXaL6oNhuX3LWAinx7LmhrAozfVzCvk",
+    authDomain: "dr-de-roda-lr-portal.firebaseapp.com",
+    projectId: "dr-de-roda-lr-portal",
+    storageBucket: "dr-de-roda-lr-portal.appspot.com", // ✅ fixed
+    messagingSenderId: "1074205661200",
+    appId: "1:1074205661200:web:f42d20c85f8600728cd295",
+    measurementId: "G-MJF7Z2DYHS"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);       // Firestore DB
+  const storage = getStorage(app);    // Firebase Storage
+  const analytics = getAnalytics(app);
+</script>
+</body>
+</html>
